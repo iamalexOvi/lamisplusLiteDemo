@@ -1,0 +1,1 @@
+{"patients": [{"id": 1, "patient_id": "PAT0001", "first_name": "john", "last_name": "doe", "dob": "2014-12-01T00:00:00", "gender": "M", "education": "Post Secondary", "marital_status": "Single", "address": "Maxwell khobe cantonment Jos.", "contact": "091037353455", "registration_date": "2025-01-06T11:45:46.154473", "uuid": "PAT-1"}], "hiv_tests": []}
