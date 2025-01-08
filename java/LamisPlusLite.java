@@ -222,7 +222,7 @@ String ninNumber = "NIN-" + id;
         try {
             System.out.print("Enter patient ID: ");
             int id = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); // nextlin/newline
 
             Patient patient = findPatientById(id);
             if (patient == null) {
@@ -238,7 +238,7 @@ String ninNumber = "NIN-" + id;
             System.out.println("Diagnosis added for patient " + patient.firstName + " " + patient.lastName + "!\n");
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a valid patient ID as a number.");
-            scanner.nextLine(); // Consume invalid input
+            scanner.nextLine(); // Holds invalid input
         } catch (Exception e) {
             System.out.println("An error occurred while adding the diagnosis. Please try again.");
         }
@@ -302,32 +302,42 @@ String ninNumber = "NIN-" + id;
             }
 
             // Print Patient Demographics
-            System.out.println("\n=== Patient Record ===");
-            System.out.println("ID: " + patient.id);
-            System.out.println("Patient ID: " + patient.patientId);
-            System.out.println("Name: " + patient.firstName + " " + patient.lastName);
-            System.out.println("Date of Birth: " + patient.dob.format(dateFormatter));
-            System.out.println("Gender: " + patient.gender);
-            System.out.println("Education: " + patient.education);
-            System.out.println("Marital Status: " + patient.maritalStatus);
-            System.out.println("Address: " + patient.address);
-            System.out.println("Contact: " + patient.contact);
-            System.out.println("Registration Date: " + patient.dateOfRegistration.format(dateFormatter));
+            System.out.println("\n" + "=".repeat(50));
+            System.out.println("PATIENT RECORD");
+            System.out.println("=".repeat(50));
+            System.out.printf("ID: %d%n", patient.id);
+            System.out.printf("UUID: %s%n", patient.uuid);
+            System.out.printf("Patient ID: %s%n", patient.patientId);
+            System.out.printf("Name: %s %s %s%n", patient.firstName, patient.lastName, patient.otherName);
+            System.out.printf("Date of Birth: %s%n", patient.dob.format(dateFormatter));
+            System.out.printf("Gender: %s%n", patient.gender);
+            System.out.printf("Education: %s%n", patient.education);
+            System.out.printf("Marital Status: %s%n", patient.maritalStatus);
+            System.out.printf("Address: %s%n", patient.address);
+            System.out.printf("Contact: %s%n", patient.contact);
+            System.out.printf("Registration Date: %s%n", patient.dateOfRegistration.format(dateFormatter));
 
             // Print HIV Test History
-            System.out.println("\n=== HIV Test History ===");
+            System.out.println("\n" + "=".repeat(50));
+            System.out.println("HIV TEST HISTORY");
+            System.out.println("=".repeat(50));
+            
             boolean hasTests = false;
             for (HivTesting test : hivTests) {
                 if (test.person_uuid.equals(patient.uuid)) {
                     hasTests = true;
-                    System.out.println("\nTest ID: " + test.id);
-                    System.out.println("Date: " + test.dateVisit.format(dateFormatter));
-                    System.out.println("Setting: " + test.testingSetting);
-                    System.out.println("Result: " + test.hivTestResult);
-                    System.out.println("PrEP Given: " + test.prepGiven);
-                    System.out.println("CD4 Result: " + test.cd4Result);
-                    System.out.println("STI Screening: " + test.stiScreening);
-                    System.out.println("----------------------------------------");
+                    System.out.println("\nTest Details:");
+                    System.out.printf("Test ID: %d%n", test.id);
+                    System.out.printf("Visit Date: %s%n", test.dateVisit.format(dateFormatter));
+                    System.out.printf("Setting: %s%n", test.testingSetting);
+                    System.out.printf("Result: %s%n", test.hivTestResult);
+                    if (test.hivTestResult.equalsIgnoreCase("Negative")) {
+                        System.out.printf("PrEP Given: %s%n", test.prepGiven);
+                    }
+                    System.out.printf("First Time Visit: %s%n", test.firstTimeVisit);
+                    System.out.printf("CD4 Result: %s%n", test.cd4Result);
+                    System.out.printf("STI Screening: %s%n", test.stiScreening);
+                    System.out.println("-".repeat(50));
                 }
             }
             
