@@ -130,16 +130,17 @@ public class LamisPlusLite {
         String referredFrom;
         String testingSetting;
         String hivTestResult;
+        String prepOffered;
         String prepGiven;
+        String prepAccepted;
         boolean firstTimeVisit;
         int numberOfChildren;
         String indexClient;
         String cd4Result;
         String stiScreening;
 
-        public HivTesting(int id, String person_uuid, String uuid, LocalDate dateVisit, String referredFrom,
-                          String testingSetting, String hivTestResult, String prepGiven, boolean firstTimeVisit,
-                          int numberOfChildren, String indexClient, String cd4Result, String stiScreening) {
+        //create constructor HivTesting
+        public HivTesting(int id, String person_uuid, String uuid, LocalDate dateVisit, String referredFrom, String testingSetting, String hivTestResult, String prepOffered, String prepGiven, String prepAccepted, boolean firstTimeVisit, int numberOfChildren, String indexClient, String cd4Result, String stiScreening) {
             this.id = id;
             this.person_uuid= person_uuid;
             this.uuid = uuid;
@@ -147,6 +148,8 @@ public class LamisPlusLite {
             this.referredFrom = referredFrom;
             this.testingSetting = testingSetting;
             this.hivTestResult = hivTestResult;
+            this.prepOffered = prepOffered;
+            this.prepAccepted = prepAccepted;
             this.prepGiven = prepGiven;
             this.firstTimeVisit = firstTimeVisit;
             this.numberOfChildren = numberOfChildren;
@@ -264,7 +267,7 @@ String ninNumber = "NIN-" + id;
             System.out.print("Is this a first-time visit (true/false): ");
             boolean firstTimeVisit = scanner.nextBoolean();
             scanner.nextLine(); // accept user data
-            System.out.print("Enter number of children: ");
+            System.out.print("Enter numberOfChildren: ");
             int numberOfChildren = scanner.nextInt();
             scanner.nextLine(); // accept user data
             System.out.print("Enter CD4 result: ");
@@ -275,10 +278,7 @@ String ninNumber = "NIN-" + id;
             String uuid = "HIVTEST" + (hivTests.size() + 1);
             String indexClient = "INDEX" + (hivTests.size() + 1);
             LocalDate dateVisit = LocalDate.now();
-
-            HivTesting hivTest = new HivTesting(hivTests.size() + 1, person_uuid, uuid, dateVisit, referredFrom,
-                    testingSetting, hivTestResult, prepGiven, firstTimeVisit, numberOfChildren, indexClient,
-                    cd4Result, stiScreening);
+                    HivTesting hivTest = new HivTesting(hivTests.size() + 1, person_uuid, uuid, dateVisit, referredFrom, testingSetting, hivTestResult, "", prepGiven, "", firstTimeVisit, numberOfChildren, indexClient, cd4Result, stiScreening);
             hivTests.add(hivTest);
             System.out.println("HIV test added successfully with ID " + hivTest.id + "!\n");
         } catch (InputMismatchException e) {
@@ -291,6 +291,7 @@ String ninNumber = "NIN-" + id;
 
     public static void viewPatientRecord() {
         try {
+            // Get Patient ID
             System.out.print("Enter patient ID: ");
             int id = scanner.nextInt();
             scanner.nextLine();
@@ -306,28 +307,24 @@ String ninNumber = "NIN-" + id;
             System.out.println("PATIENT DEMOGRAPHICS");
             System.out.println("=".repeat(50));
             System.out.printf("ID: %d%n", patient.id);
-            System.out.printf("Name: %s %s%n", patient.firstName, patient.lastName);
+            System.out.printf("Name: %s %s %s%n", patient.firstName, patient.lastName, patient.otherName);
+            System.out.printf("Hospital Number: %s%n", patient.hospitalNumber);
             System.out.printf("Gender: %s%n", patient.gender);
             System.out.printf("DOB: %s%n", patient.dob.format(dateFormatter));
-            System.out.printf("Registration Date: %s%n", patient.dateOfRegistration.format(dateFormatter));
             System.out.printf("Contact: %s%n", patient.contact);
-            System.out.printf("Address: %s%n", patient.address);
 
-            // Section 2: HIV Tests
+            // Section 2: HIV Test History
             System.out.println("\n" + "=".repeat(50));
             System.out.println("HIV TEST HISTORY");
             System.out.println("=".repeat(50));
-            if (patient.tests.isEmpty()) {
-                System.out.println("No HIV tests recorded");
-            } else {
-                for (Test test : patient.tests) {
-                    System.out.println("\nTest Details:");
-                    System.out.printf("Date: %s%n", test.date.format(dateFormatter));
-                    System.out.printf("Test Name: %s%n", test.testName);
-                    System.out.printf("Result: %s%n", test.result);
-                    System.out.println("-".repeat(30));
+            boolean hasTests = false;
+            for (HivTesting test : hivTests) {
+                if (test.id == patient.id) {
+                    hasTests = true;
+                    displayHivTestResults(test);
                 }
             }
+            if (!hasTests) System.out.println("No HIV tests recorded");
 
             // Section 3: Clinical Diagnoses
             System.out.println("\n" + "=".repeat(50));
@@ -337,8 +334,7 @@ String ninNumber = "NIN-" + id;
                 System.out.println("No clinical diagnoses recorded");
             } else {
                 for (Diagnosis diag : patient.diagnoses) {
-                    System.out.println("\nDiagnosis Details:");
-                    System.out.printf("Date: %s%n", diag.date.format(dateFormatter));
+                    System.out.printf("\nDate: %s%n", diag.date.format(dateFormatter));
                     System.out.printf("Diagnosis: %s%n", diag.diagnosis);
                     System.out.println("-".repeat(30));
                 }
@@ -391,7 +387,7 @@ String ninNumber = "NIN-" + id;
     }
 
     private static void displayMenu() {
-        System.out.println(MENU_BORDER);
+        System.out.println("\n" + MENU_BORDER);
         System.out.println("LAMISPLUS LITE - HIV/AIDS Management System");
         System.out.println(MENU_BORDER);
         MENU_OPTIONS.forEach((key, value) -> 
@@ -404,7 +400,14 @@ String ninNumber = "NIN-" + id;
         while (true) {
             try {
                 displayMenu();
-                int choice = validateMenuInput(scanner.nextLine());
+                String input = scanner.nextLine().trim();
+                
+                if (input.isEmpty()) {
+                    System.out.println("Please make a selection");
+                    continue;
+                }
+
+                int choice = validateMenuInput(input);
                 
                 switch (choice) {
                     case 1 -> addPatient();
@@ -413,28 +416,53 @@ String ninNumber = "NIN-" + id;
                     case 4 -> viewPatientRecord();
                     case 5 -> viewAllPatients();
                     case 6 -> {
-                        System.out.println("Exiting the system. Goodbye!");
+                        System.out.println("Exiting system. Goodbye!");
                         System.exit(0);
                     }
-                    default -> System.out.println("Invalid option. Please try again.\n");
                 }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                LOGGER.log(Level.WARNING, "Invalid menu input", e);
             } catch (Exception e) {
+                System.out.println("An error occurred. Please try again.");
                 LOGGER.log(Level.SEVERE, "Error in main menu", e);
-                System.out.println("An error occurred. Please try again.\n");
-                scanner.nextLine(); // Clear buffer
             }
         }
     }
 
     private static int validateMenuInput(String input) {
         try {
+            if (input == null || input.trim().isEmpty()) {
+                throw new IllegalArgumentException("Input cannot be empty");
+            }
+
             int choice = Integer.parseInt(input.trim());
             if (choice < 1 || choice > MENU_OPTIONS.size()) {
-                throw new IllegalArgumentException("Invalid menu option");
+                throw new IllegalArgumentException(
+                    String.format("Please enter a number between 1 and %d", MENU_OPTIONS.size())
+                );
             }
             return choice;
+
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Please enter a valid number");
+            System.out.println("Please enter a valid number");
+            LOGGER.log(Level.WARNING, "Invalid number format entered: " + input);
+            throw new IllegalArgumentException("Invalid input");
         }
+    }
+
+    private static void displayHivTestResults(HivTesting test) {
+        System.out.printf("Test Date: %s%n", test.dateVisit.format(dateFormatter));
+        System.out.printf("Test Setting: %s%n", test.testingSetting);
+        System.out.printf("Result: %s%n", test.hivTestResult);
+
+        if ("Negative".equalsIgnoreCase(test.hivTestResult)) {
+            System.out.printf("PrEP Given: %s%n", test.prepGiven);
+        } else if ("Positive".equalsIgnoreCase(test.hivTestResult)) {
+            System.out.printf("CD4 Count: %s%n", test.cd4Result);
+        }
+
+        System.out.printf("STI Screening: %s%n", test.stiScreening);
+        System.out.println("-".repeat(30));
     }
 }

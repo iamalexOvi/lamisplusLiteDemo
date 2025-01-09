@@ -136,6 +136,8 @@ public class LamisPlusLite {
         String indexClient;
         String cd4Result;
         String stiScreening;
+        private String prepAccepted;
+        private String prepOffered;
 
         public HivTesting(int id, String person_uuid, String uuid, LocalDate dateVisit, String referredFrom,
                           String testingSetting, String hivTestResult, String prepGiven, boolean firstTimeVisit,
