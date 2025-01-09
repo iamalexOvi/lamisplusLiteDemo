@@ -301,38 +301,47 @@ String ninNumber = "NIN-" + id;
                 return;
             }
 
-            // Print Patient Demographics
-            System.out.println("\n=== Patient Record ===");
-            System.out.println("ID: " + patient.id);
-            System.out.println("Patient ID: " + patient.patientId);
-            System.out.println("Name: " + patient.firstName + " " + patient.lastName);
-            System.out.println("Date of Birth: " + patient.dob.format(dateFormatter));
-            System.out.println("Gender: " + patient.gender);
-            System.out.println("Education: " + patient.education);
-            System.out.println("Marital Status: " + patient.maritalStatus);
-            System.out.println("Address: " + patient.address);
-            System.out.println("Contact: " + patient.contact);
-            System.out.println("Registration Date: " + patient.dateOfRegistration.format(dateFormatter));
+            // Section 1: Patient Demographics
+            System.out.println("\n" + "=".repeat(50));
+            System.out.println("PATIENT DEMOGRAPHICS");
+            System.out.println("=".repeat(50));
+            System.out.printf("ID: %d%n", patient.id);
+            System.out.printf("Name: %s %s%n", patient.firstName, patient.lastName);
+            System.out.printf("Gender: %s%n", patient.gender);
+            System.out.printf("DOB: %s%n", patient.dob.format(dateFormatter));
+            System.out.printf("Registration Date: %s%n", patient.dateOfRegistration.format(dateFormatter));
+            System.out.printf("Contact: %s%n", patient.contact);
+            System.out.printf("Address: %s%n", patient.address);
 
-            // Print HIV Test History
-            System.out.println("\n=== HIV Test History ===");
-            boolean hasTests = false;
-            for (HivTesting test : hivTests) {
-                if (test.person_uuid.equals(patient.uuid)) {
-                    hasTests = true;
-                    System.out.println("\nTest ID: " + test.id);
-                    System.out.println("Date: " + test.dateVisit.format(dateFormatter));
-                    System.out.println("Setting: " + test.testingSetting);
-                    System.out.println("Result: " + test.hivTestResult);
-                    System.out.println("PrEP Given: " + test.prepGiven);
-                    System.out.println("CD4 Result: " + test.cd4Result);
-                    System.out.println("STI Screening: " + test.stiScreening);
-                    System.out.println("----------------------------------------");
+            // Section 2: HIV Tests
+            System.out.println("\n" + "=".repeat(50));
+            System.out.println("HIV TEST HISTORY");
+            System.out.println("=".repeat(50));
+            if (patient.tests.isEmpty()) {
+                System.out.println("No HIV tests recorded");
+            } else {
+                for (Test test : patient.tests) {
+                    System.out.println("\nTest Details:");
+                    System.out.printf("Date: %s%n", test.date.format(dateFormatter));
+                    System.out.printf("Test Name: %s%n", test.testName);
+                    System.out.printf("Result: %s%n", test.result);
+                    System.out.println("-".repeat(30));
                 }
             }
-            
-            if (!hasTests) {
-                System.out.println("No HIV tests recorded for this patient.");
+
+            // Section 3: Clinical Diagnoses
+            System.out.println("\n" + "=".repeat(50));
+            System.out.println("CLINICAL DIAGNOSES");
+            System.out.println("=".repeat(50));
+            if (patient.diagnoses.isEmpty()) {
+                System.out.println("No clinical diagnoses recorded");
+            } else {
+                for (Diagnosis diag : patient.diagnoses) {
+                    System.out.println("\nDiagnosis Details:");
+                    System.out.printf("Date: %s%n", diag.date.format(dateFormatter));
+                    System.out.printf("Diagnosis: %s%n", diag.diagnosis);
+                    System.out.println("-".repeat(30));
+                }
             }
 
         } catch (InputMismatchException e) {
